@@ -1,4 +1,6 @@
 packages:
   - "apps/*"
+
 allowBuilds:
-  unrs-resolver: true
+  sharp: false
+  unrs-resolver: false
