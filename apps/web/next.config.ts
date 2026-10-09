@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  transpilePackages: ["@ipo-pulse/core"],
   turbopack: {
     rules: {
       "*.css": {
