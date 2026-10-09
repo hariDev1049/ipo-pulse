@@ -1,6 +1,6 @@
 export function ChatSkeleton() {
   return (
-    <aside className="flex min-h-[28rem] flex-col border-border bg-card lg:border-l" aria-busy="true">
+    <aside className="flex h-full min-h-[28rem] flex-col border-t border-border bg-card lg:min-h-0 lg:border-t-0" aria-busy="true">
       <div className="border-b border-border px-4 py-3">
         <div className="h-4 w-28 animate-pulse rounded bg-zinc-800" />
         <div className="mt-2 h-3 w-48 animate-pulse rounded bg-zinc-800" />

@@ -10,7 +10,7 @@ import {
   formatShares,
   formatUsdCompact,
 } from "@/lib/format";
-import { PerformanceChart } from "./performance-chart";
+import { DashboardOverview } from "./dashboard-charts";
 import { StatusBadge } from "./status-badge";
 
 type View = "upcoming" | "recent" | "all";
@@ -44,6 +44,16 @@ function DashboardBody({
   const [from, setFrom] = useState(data.from);
   const [to, setTo] = useState(data.to);
 
+  const universe = useMemo(
+    () =>
+      data.ipos.filter((ipo) => {
+        if (!showSpacs && ipo.isSpac) return false;
+        if (ipo.date && (ipo.date < from || ipo.date > to)) return false;
+        return true;
+      }),
+    [data.ipos, showSpacs, from, to],
+  );
+
   const rows = useMemo(
     () =>
       filterIpos(data.ipos, {
@@ -58,7 +68,7 @@ function DashboardBody({
   );
 
   return (
-    <section className="flex min-w-0 flex-col gap-6" aria-labelledby="dashboard-heading">
+    <section className="flex min-h-0 min-w-0 flex-col gap-6" aria-labelledby="dashboard-heading">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 id="dashboard-heading" className="text-lg font-semibold tracking-tight">
@@ -151,16 +161,13 @@ function DashboardBody({
         ) : null}
       </div>
 
-      <IpoTable rows={rows} />
+      <DashboardOverview
+        ipos={universe}
+        today={data.today}
+        performance={data.performance}
+      />
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="text-sm font-medium">Listing performance (last 30 days)</h3>
-        <p className="mb-4 mt-1 text-xs text-muted">
-          Current quote vs IPO midpoint. SPACs excluded. Quotes can be missing on
-          very new listings.
-        </p>
-        <PerformanceChart rows={data.performance} />
-      </div>
+      <IpoTable rows={rows} />
     </section>
   );
 }

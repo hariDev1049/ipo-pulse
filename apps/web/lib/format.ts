@@ -13,6 +13,15 @@ const MONTHS = [
   "Dec",
 ] as const;
 
+/** Format YYYY-MM without constructing a Date from the string. */
+export function formatYearMonth(yearMonth: string): string {
+  const [year, month] = yearMonth.split("-");
+  if (!year || !month) return yearMonth;
+  const monthIndex = Number(month) - 1;
+  if (monthIndex < 0 || monthIndex > 11) return yearMonth;
+  return `${MONTHS[monthIndex]} ${year.slice(2)}`;
+}
+
 /** Format a timezone-naive YYYY-MM-DD without `new Date(string)`. */
 export function formatIsoDate(isoDate: string | null): string {
   if (!isoDate) return "—";

@@ -52,7 +52,7 @@ export function ChatPanel() {
 
   return (
     <aside
-      className="flex h-full min-h-[28rem] flex-col border-border bg-card lg:border-l"
+      className="flex h-full min-h-0 flex-col border-t border-border bg-card lg:border-t-0"
       aria-labelledby="chat-heading"
     >
       <div className="border-b border-border px-4 py-3">

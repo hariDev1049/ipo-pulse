@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { AppSplit } from "@/components/app-split";
 import { ChatPanel } from "@/components/chat-panel";
 import { ChatSkeleton } from "@/components/chat-skeleton";
 import { DashboardSkeleton } from "@/components/dashboard-skeleton";
@@ -8,8 +9,8 @@ import { loadDashboard } from "@/lib/dashboard-data";
 
 export default function Home() {
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-border px-4 py-3 lg:px-6">
+    <div className="flex h-dvh flex-col overflow-hidden">
+      <header className="shrink-0 border-b border-border px-4 py-3 lg:px-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">
@@ -24,16 +25,18 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <main className="min-w-0 px-4 py-6 lg:px-6">
+      <AppSplit
+        dashboard={
           <Suspense fallback={<DashboardSkeleton />}>
             <DashboardSection />
           </Suspense>
-        </main>
-        <Suspense fallback={<ChatSkeleton />}>
-          <ChatSection />
-        </Suspense>
-      </div>
+        }
+        chat={
+          <Suspense fallback={<ChatSkeleton />}>
+            <ChatSection />
+          </Suspense>
+        }
+      />
     </div>
   );
 }
