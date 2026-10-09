@@ -10,8 +10,11 @@ export const emptyProvider: IpoDataProvider = {
   getQuote: async () => null,
 };
 
-export async function connectClient(provider: IpoDataProvider = emptyProvider): Promise<Client> {
-  const handler = createMcpHandler(() => createServer(provider));
+export async function connectClient(
+  provider: IpoDataProvider = emptyProvider,
+  options?: { now?: () => Date },
+): Promise<Client> {
+  const handler = createMcpHandler(() => createServer(provider, options));
   const client = new Client(
     { name: "test-client", version: "1.0.0" },
     { versionNegotiation: { mode: "auto" } },
