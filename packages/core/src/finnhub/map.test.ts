@@ -52,12 +52,17 @@ describe("mapFinnhubIpo", () => {
   });
 
   it("normalizes status casing", () => {
-    expect(mapFinnhubIpo({ ...trexBio, status: "Priced" })?.status).toBe("priced");
+    expect(mapFinnhubIpo({ ...trexBio, status: "Priced" })?.status).toBe(
+      "priced",
+    );
   });
 
-  it.each([[null], [""], ["postponed"]])("skips records with status %j", (status) => {
-    expect(mapFinnhubIpo({ ...trexBio, status })).toBeNull();
-  });
+  it.each([[null], [""], ["postponed"]])(
+    "skips records with status %j",
+    (status) => {
+      expect(mapFinnhubIpo({ ...trexBio, status })).toBeNull();
+    },
+  );
 
   it.each([[null], [""], ["   "]])("skips records with name %j", (name) => {
     expect(mapFinnhubIpo({ ...trexBio, name })).toBeNull();
@@ -66,7 +71,9 @@ describe("mapFinnhubIpo", () => {
 
 describe("parseFinnhubIpoCalendar", () => {
   it("maps a full response and drops unusable records", () => {
-    const ipos = parseFinnhubIpoCalendar(fixture);
+    const { ipos, skipped } = parseFinnhubIpoCalendar(fixture);
+
+    expect(skipped).toBe(2);
 
     expect(ipos.map((ipo) => ipo.name)).toEqual([
       "TRex Bio, Inc.",
@@ -83,6 +90,8 @@ describe("parseFinnhubIpoCalendar", () => {
   });
 
   it("throws when the response is not an IPO calendar", () => {
-    expect(() => parseFinnhubIpoCalendar({ error: "Invalid API key" })).toThrow();
+    expect(() =>
+      parseFinnhubIpoCalendar({ error: "Invalid API key" }),
+    ).toThrow();
   });
 });

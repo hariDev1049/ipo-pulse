@@ -1,6 +1,6 @@
-import { IPO_STATUSES, type Ipo, type IpoStatus } from "../types";
+import { IPO_STATUSES, type Ipo, type IpoStatus, type Quote } from "../types";
 import { isLikelySpac, parsePriceRange } from "./parse";
-import { finnhubIpoCalendarSchema, type FinnhubIpo } from "./schemas";
+import { finnhubIpoCalendarSchema, finnhubQuoteSchema, type FinnhubIpo } from "./schemas";
 
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -43,7 +43,26 @@ export function mapFinnhubIpo(raw: FinnhubIpo): Ipo | null {
   };
 }
 
-export function parseFinnhubIpoCalendar(json: unknown): Ipo[] {
+export interface ParsedIpoCalendar {
+  ipos: Ipo[];
+  skipped: number;
+}
+
+export function parseFinnhubIpoCalendar(json: unknown): ParsedIpoCalendar {
   const { ipoCalendar } = finnhubIpoCalendarSchema.parse(json);
-  return ipoCalendar.map(mapFinnhubIpo).filter((ipo) => ipo !== null);
+  const ipos = ipoCalendar.map(mapFinnhubIpo).filter((ipo) => ipo !== null);
+  return { ipos, skipped: ipoCalendar.length - ipos.length };
+}
+
+export function parseFinnhubQuote(symbol: string, json: unknown): Quote | null {
+  const { c, d, dp, t } = finnhubQuoteSchema.parse(json);
+  if (c === 0 || d === null || dp === null) return null;
+
+  return {
+    symbol,
+    current: c,
+    change: d,
+    percentChange: dp,
+    asOf: new Date(t * 1000).toISOString(),
+  };
 }
