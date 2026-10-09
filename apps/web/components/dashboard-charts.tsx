@@ -263,33 +263,36 @@ function StatusDonutChart({
   const progress = useCountUp(1, 900);
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
-  let offset = 0;
+  const arcs = slices
+    .filter((slice) => slice.count > 0)
+    .map((slice) => ({
+      status: slice.status,
+      fullDash: (slice.count / total) * circumference,
+    }))
+    .map((slice, index, all) => ({
+      status: slice.status,
+      dash: slice.fullDash * progress,
+      offset: all.slice(0, index).reduce((sum, item) => sum + item.fullDash, 0),
+    }));
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-6 overflow-hidden">
       <svg viewBox="0 0 96 96" className="size-32 shrink-0" role="img" aria-label="IPO status mix">
         <circle cx="48" cy="48" r={radius} fill="none" stroke="#27272a" strokeWidth="12" />
-        {slices.map((slice) => {
-          if (slice.count === 0) return null;
-          const fullDash = (slice.count / total) * circumference;
-          const dash = fullDash * progress;
-          const circle = (
-            <circle
-              key={slice.status}
-              cx="48"
-              cy="48"
-              r={radius}
-              fill="none"
-              stroke={STATUS_COLORS[slice.status]}
-              strokeWidth="12"
-              strokeDasharray={`${dash} ${circumference - dash}`}
-              strokeDashoffset={-offset}
-              transform="rotate(-90 48 48)"
-            />
-          );
-          offset += fullDash;
-          return circle;
-        })}
+        {arcs.map((arc) => (
+          <circle
+            key={arc.status}
+            cx="48"
+            cy="48"
+            r={radius}
+            fill="none"
+            stroke={STATUS_COLORS[arc.status]}
+            strokeWidth="12"
+            strokeDasharray={`${arc.dash} ${circumference - arc.dash}`}
+            strokeDashoffset={-arc.offset}
+            transform="rotate(-90 48 48)"
+          />
+        ))}
         <text
           x="48"
           y="48"
