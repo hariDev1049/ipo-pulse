@@ -1,4 +1,5 @@
-import { createServer as createHttpServer } from "node:http";
+import { createServer as createHttpServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { timingSafeEqual } from "node:crypto";
 import { CachedProvider, FinnhubProvider } from "@ipo-pulse/core";
 import {
   localhostHostValidation,
@@ -17,6 +18,26 @@ const mcp = toNodeHandler(handler);
 const validateHost = localhostHostValidation();
 const validateOrigin = localhostOriginValidation();
 
+function hasValidBearer(header: string | undefined, secret: string): boolean {
+  const prefix = "Bearer ";
+  if (!header?.startsWith(prefix)) return false;
+  const got = Buffer.from(header.slice(prefix.length));
+  const want = Buffer.from(secret);
+  if (got.length !== want.length) return false;
+  return timingSafeEqual(got, want);
+}
+
+function authorize(req: IncomingMessage, res: ServerResponse): boolean {
+  if (config.sharedSecret) {
+    if (hasValidBearer(req.headers.authorization, config.sharedSecret)) return true;
+    res.writeHead(401, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "unauthorized" }));
+    return false;
+  }
+
+  return validateHost(req, res) && validateOrigin(req, res);
+}
+
 const httpServer = createHttpServer((req, res) => {
   const { pathname } = new URL(req.url ?? "/", "http://localhost");
 
@@ -32,7 +53,7 @@ const httpServer = createHttpServer((req, res) => {
     return;
   }
 
-  if (!validateHost(req, res) || !validateOrigin(req, res)) return;
+  if (!authorize(req, res)) return;
   void mcp(req, res);
 });
 

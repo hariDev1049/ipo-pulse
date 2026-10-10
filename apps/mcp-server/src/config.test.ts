@@ -7,11 +7,18 @@ describe("loadConfig", () => {
       finnhubApiKey: "key",
       host: "127.0.0.1",
       port: 3001,
+      sharedSecret: undefined,
     });
   });
 
   it("reads the port as a number", () => {
     expect(loadConfig({ FINNHUB_API_KEY: "key", MCP_PORT: "4000" }).port).toBe(4000);
+  });
+
+  it("prefers PORT over MCP_PORT (container hosts)", () => {
+    expect(loadConfig({ FINNHUB_API_KEY: "key", MCP_PORT: "3001", PORT: "10000" }).port).toBe(
+      10000,
+    );
   });
 
   it("fails fast without an API key", () => {

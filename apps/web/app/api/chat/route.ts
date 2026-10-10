@@ -11,6 +11,8 @@ import { SYSTEM_PROMPT } from "@/lib/system-prompt";
 const groqApiKey = process.env["GROQ_API_KEY"];
 const MCP_SERVER_URL =
   process.env["MCP_SERVER_URL"] ?? "http://127.0.0.1:3001/mcp";
+const mcpSharedSecret = process.env["MCP_SHARED_SECRET"];
+
 export async function POST(req: Request) {
   if (!groqApiKey) {
     return new Response("GROQ_API_KEY is not set", { status: 500 });
@@ -23,6 +25,9 @@ export async function POST(req: Request) {
       type: "http",
       url: MCP_SERVER_URL,
       redirect: "error",
+      headers: mcpSharedSecret
+        ? { Authorization: `Bearer ${mcpSharedSecret}` }
+        : undefined,
     },
     maxRetries: 2,
   });
