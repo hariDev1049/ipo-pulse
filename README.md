@@ -4,7 +4,9 @@ US IPO dashboard plus an AI chat that answers from **live Finnhub data**, not mo
 
 The chat never invents prices or dates: Groq calls read-only MCP tools, and every answer is supposed to cite the source and `asOf` timestamp. The UI is not investment advice and the agent refuses buy/sell questions.
 
-**Status:** v1 of the product is implemented and [CI is green](https://github.com/hariDev1049/ipo-pulse/actions). There is no public demo yet — run it locally (below).
+**Status:** v1 is live at [ipo-pulse-alpha.vercel.app](https://ipo-pulse-alpha.vercel.app/). [CI is green](https://github.com/hariDev1049/ipo-pulse/actions).
+
+**Live demo:** [https://ipo-pulse-alpha.vercel.app/](https://ipo-pulse-alpha.vercel.app/) — Next.js on Vercel; chat tools on Render. After idle, the first chat reply can take 30–60 seconds while the free MCP service wakes.
 
 ## What it does
 
